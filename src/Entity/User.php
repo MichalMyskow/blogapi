@@ -92,7 +92,7 @@ class User
     /**
      * @var datetime
      *
-     * @Groups({"read", "write"})
+     * @Groups({"read"})
      *
      * @ORM\Column(type="datetime", nullable=false)
      * @Assert\NotBlank()
@@ -102,7 +102,7 @@ class User
     /**
      * @var bool
      *
-     * @Groups({"read", "write"})
+     * @Groups({"read"})
      *
      * @ORM\Column(type="boolean", nullable=false)
      * @Assert\NotBlank()
@@ -112,7 +112,7 @@ class User
     /**
      * @var datetime
      *
-     * @Groups({"read", "write"})
+     * @Groups({"read"})
      *
      * @ORM\Column(type="datetime", nullable=false)
      * @Assert\NotBlank()
@@ -122,7 +122,7 @@ class User
     /**
      * @var bool
      *
-     * @Groups({"read", "write"})
+     * @Groups({"read"})
      *
      * @ORM\Column(type="boolean", nullable=false)
      * @Assert\NotBlank()
@@ -134,7 +134,7 @@ class User
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -146,7 +146,7 @@ class User
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }
@@ -158,7 +158,7 @@ class User
         return $this;
     }
 
-    public function getFirstName(): ?string
+    public function getFirstName(): string
     {
         return $this->firstName;
     }
@@ -170,19 +170,19 @@ class User
         return $this;
     }
 
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName): self
+    public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
 
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -199,23 +199,9 @@ class User
         return $this->registeredAt;
     }
 
-    public function setRegisteredAt(DateTimeInterface $registeredAt): self
-    {
-        $this->registeredAt = $registeredAt;
-
-        return $this;
-    }
-
-    public function getVerified(): ?bool
+    public function getVerified(): bool
     {
         return $this->verified;
-    }
-
-    public function setVerified(bool $verified): self
-    {
-        $this->verified = $verified;
-
-        return $this;
     }
 
     public function getLastLogin(): ?DateTimeInterface
@@ -229,22 +215,8 @@ class User
         $this->registeredAt = new DateTimeImmutable();
     }
 
-    public function setLastLogin(DateTimeInterface $lastLogin): self
-    {
-        $this->lastLogin = $lastLogin;
-
-        return $this;
-    }
-
-    public function getIsAuthor(): ?bool
+    public function getIsAuthor(): bool
     {
         return $this->isAuthor;
-    }
-
-    public function setIsAuthor(bool $isAuthor): self
-    {
-        $this->isAuthor = $isAuthor;
-
-        return $this;
     }
 }
