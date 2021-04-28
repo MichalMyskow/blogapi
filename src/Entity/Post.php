@@ -27,7 +27,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "post"
  *     }
  * )
- * @ORM\Table(name="comment")
+ * @ORM\Table(name="post")
  * @ORM\Entity
  */
 class Post
@@ -68,43 +68,76 @@ class Post
      *
      * @Groups({"read"})
      *
-     * @ORM\Column(name="published_at", type="datetime", nullable=false)
-     * @Assert\NotBlank()
+     * @ORM\Column(name="published_at", type="datetime", nullable=true)
      */
     private $publishedAt;
 
     /**
      * @var bool
      *
-     * @Groups({"read"})
+     * @Groups({"read", "write"})
      *
      * @ORM\Column(name="published", type="boolean", nullable=false)
-     * @Assert\NotBlank()
+     * @Assert\Type(type="bool")
+     * @Assert\NotNull()
      */
     private $published;
 
     /**
      * @var bool
      *
-     * @Groups({"read"})
+     * @Groups({"read", "write"})
      *
      * @ORM\Column(name="comments_active", type="boolean", nullable=false)
-     * @Assert\NotBlank()
+     * @Assert\Type(type="bool")
+     * @Assert\NotNull()
      */
     private $commentsActive;
 
     /**
+     * @var Comment[]
+     *
      * @Groups({"read"})
      *
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="owner")
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="post")
      */
     private $comments;
+
+    /**
+     * @var User
+     *
+     * @Groups ({"read", "write"})
+     *
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="posts")
+     * @ORM\JoinColumn(name="user_id", nullable=false)
+     * @Assert\NotBlank()
+     */
+    private $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Tag::class, inversedBy="posts")
+     * @ORM\JoinTable(name="post_to_tag")
+     */
+    private $tags;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Category::class, inversedBy="posts")
+     * @ORM\JoinTable(name="post_to_category")
+     */
+    private $categories;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="likedPosts")
+     * @ORM\JoinTable(name="likes")
+     */
+    private $likes;
 
     public function __construct()
     {
         $this->comments = new ArrayCollection();
-        $this->publishedAt = new DateTimeImmutable();
-        $this->comments = new ArrayCollection();
+        $this->tags = new ArrayCollection();
+        $this->categories = new ArrayCollection();
+        $this->likes = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,7 +157,7 @@ class Post
         return $this;
     }
 
-    public function getPublishedAt(): DateTimeInterface
+    public function getPublishedAt(): ?DateTimeInterface
     {
         return $this->publishedAt;
     }
@@ -156,14 +189,28 @@ class Post
         return $this->commentsActive;
     }
 
+    public function setCommentsActive(bool $commentsActive): self
+    {
+        $this->commentsActive = $commentsActive;
+
+        return $this;
+    }
+
     public function isPublished(): bool
     {
         return $this->published;
     }
 
-    /**
-     * @return Collection|Comment[]
-     */
+    public function setPublished(bool $published): self
+    {
+        $this->published = $published;
+        if ($published) {
+            $this->publishedAt = new DateTimeImmutable();
+        }
+
+        return $this;
+    }
+
     public function getComments(): Collection
     {
         return $this->comments;
@@ -173,7 +220,7 @@ class Post
     {
         if (!$this->comments->contains($comment)) {
             $this->comments[] = $comment;
-            $comment->setOwner($this);
+            $comment->setPost($this);
         }
 
         return $this;
@@ -181,12 +228,93 @@ class Post
 
     public function removeComment(Comment $comment): self
     {
-        if ($this->comments->removeElement($comment)) {
-            // set the owning side to null (unless already changed)
-            if ($comment->getOwner() === $this) {
-                $comment->setOwner(null);
-            }
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
         }
+
+        return $this;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+        }
+
+        return $this;
+    }
+
+    public function removeTag(Tag $tag): self
+    {
+        $this->tags->removeElement($tag);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Category[]
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): self
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories[] = $category;
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): self
+    {
+        $this->categories->removeElement($category);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getLikes(): Collection
+    {
+        return $this->likes;
+    }
+
+    public function addLike(User $like): self
+    {
+        if (!$this->likes->contains($like)) {
+            $this->likes[] = $like;
+        }
+
+        return $this;
+    }
+
+    public function removeLike(User $like): self
+    {
+        $this->likes->removeElement($like);
 
         return $this;
     }

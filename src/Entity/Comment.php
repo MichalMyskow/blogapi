@@ -57,7 +57,8 @@ class Comment
      * @Groups({"read"})
      *
      * @ORM\Column(name="description", type="boolean", nullable=false)
-     * @Assert\NotBlank()
+     * @Assert\Type(type="bool")
+     * @Assert\NotNull()
      */
     private $approved;
 
@@ -77,9 +78,24 @@ class Comment
      * @Groups({"read", "write"})
      *
      * @ORM\ManyToOne(targetEntity=Post::class, inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(name="post_id", nullable=false)
      */
-    private $owner;
+    private $post;
+
+    /**
+     * @var User
+     *
+     * @Groups({"read", "write"})
+     *
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
+     * @ORM\JoinColumn(name="user_id", nullable=false)
+     */
+    private $user;
+
+    public function __construct()
+    {
+        $this->createdAt = new DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -108,19 +124,26 @@ class Comment
         return $this->createdAt;
     }
 
-    public function __construct()
+    public function getPost(): Post
     {
-        $this->createdAt = new DateTimeImmutable();
+        return $this->post;
     }
 
-    public function getOwner(): ?Post
+    public function setPost(Post $post): self
     {
-        return $this->owner;
+        $this->post = $post;
+
+        return $this;
     }
 
-    public function setOwner(?Post $owner): self
+    public function getUser(): User
     {
-        $this->owner = $owner;
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
