@@ -41,7 +41,7 @@ class User implements UserInterface
      * @ORM\GeneratedValue
      * @ORM\Column(name="id", type="integer", nullable=false)
      */
-    private $id;
+    private int $id;
 
     /**
      * @var string
@@ -51,30 +51,32 @@ class User implements UserInterface
      * @ORM\Column(name="email", type="string", length=180, unique=true, nullable=false)
      * @Assert\NotBlank()
      */
-    private $email;
+    private string $email;
 
     /**
      * @var array
      */
-    private $roles = [];
+    private array $roles = [];
 
     /**
      * @var string The hashed password
      *
+     * @Groups ({"write"})
+     *
      * @ORM\Column(name="password", type="string", length=255, nullable=false)
      * @Assert\NotBlank()
      */
-    private $password;
+    private string $password;
 
     /**
      * @var string
      *
      * @Groups({"read","write"})
      *
-     * @ORM\Column(name="username" ,type="string", length=255,unique=true, nullable=false)
+     * @ORM\Column(name="username" ,type="string", length=255, unique=true, nullable=false)
      * @Assert\NotBlank()
      */
-    private $username;
+    private string $username;
 
     /**
      * @var string
@@ -84,7 +86,7 @@ class User implements UserInterface
      * @ORM\Column(name="first_name", type="string", length=255, nullable=false)
      * @Assert\NotBlank()
      */
-    private $firstName;
+    private string $firstName;
 
     /**
      * @var string|null
@@ -93,7 +95,7 @@ class User implements UserInterface
      *
      * @ORM\Column(name="last_name", type="string", length=255, nullable=true)
      */
-    private $lastName;
+    private ?string $lastName;
 
     /**
      * @var DateTimeInterface
@@ -103,7 +105,7 @@ class User implements UserInterface
      * @ORM\Column(name="registered_at", type="datetime", nullable=false)
      * @Assert\NotBlank()
      */
-    private $registeredAt;
+    private DateTimeImmutable|DateTimeInterface $registeredAt;
 
     /**
      * @var bool
@@ -114,7 +116,7 @@ class User implements UserInterface
      * @Assert\Type(type="bool")
      * @Assert\NotNull()
      */
-    private $verified;
+    private bool $verified = false;
 
     /**
      * @var DateTimeInterface|null
@@ -123,7 +125,7 @@ class User implements UserInterface
      *
      * @ORM\Column(name="last_login", type="datetime", nullable=true)
      */
-    private $lastLogin;
+    private ?DateTimeInterface $lastLogin;
 
     /**
      * @var bool
@@ -134,7 +136,7 @@ class User implements UserInterface
      * @Assert\Type(type="bool")
      * @Assert\NotNull()
      */
-    private $author;
+    private bool $author = false;
 
     /**
      * @var Comment[]
@@ -143,7 +145,7 @@ class User implements UserInterface
      *
      * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="user")
      */
-    private $comments;
+    private ArrayCollection|array $comments;
 
     /**
      * @var Post[]
@@ -152,12 +154,12 @@ class User implements UserInterface
      *
      * @ORM\OneToMany(targetEntity=Post::class, mappedBy="user")
      */
-    private $posts;
+    private ArrayCollection|array $posts;
 
     /**
      * @ORM\ManyToMany(targetEntity=Post::class, mappedBy="likes")
      */
-    private $likedPosts;
+    private ArrayCollection $likedPosts;
 
     public function __construct()
     {

@@ -89,6 +89,7 @@ class Comment
      *
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="comments")
      * @ORM\JoinColumn(name="user_id", nullable=false)
+     * @Assert\NotBlank()
      */
     private $user;
 

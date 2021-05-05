@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -19,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     denormalizationContext={"groups"={"write"}},
  *     itemOperations={
  *       "get",
- *       "put",
+ *       "put"={"security"="is_granted('ROLE_AUTHOR') or object.owner == user"},
  *       "delete"
  *     },
  *     collectionOperations={
@@ -27,6 +30,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *          "post"
  *     }
  * )
+ * @ApiFilter(BooleanFilter::class, properties={"published"})
+ * @ApiFilter(SearchFilter::class, properties={"title": "partial"})
  * @ORM\Table(name="post")
  * @ORM\Entity
  */
@@ -81,7 +86,7 @@ class Post
      * @Assert\Type(type="bool")
      * @Assert\NotNull()
      */
-    private $published;
+    private $published = false;
 
     /**
      * @var bool
@@ -170,6 +175,8 @@ class Post
     public function setContent(string $content): self
     {
         $this->content = $content;
+
+        return $this;
     }
 
     /**
