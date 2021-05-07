@@ -4,7 +4,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.0",
+        "php": ">=7.3",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "api-platform/core": "^2.6",
@@ -35,8 +35,7 @@
         "symfony/twig-bundle": "5.2.*",
         "symfony/validator": "5.2.*",
         "symfony/web-profiler-bundle": "5.2.*",
-        "symfony/yaml": "5.2.*",
-      "ext-http": "*"
+        "symfony/yaml": "5.2.*"
     },
     "config": {
         "optimize-autoloader": true,
