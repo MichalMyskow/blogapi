@@ -19,11 +19,12 @@ use Symfony\Component\Validator\Constraints\DateTime;
  *     denormalizationContext={"groups"={"write"}},
  *     itemOperations={
  *       "get",
- *       "put",
- *       "delete"
+ *       "put"={"security"="is_granted('ROLE_AUTHOR') or object.getUsername() == user.getUsername()"},
+ *       "patch"={"security"="is_granted('ROLE_AUTHOR') or object.getUsername() == user.getUsername()"},
+ *       "delete"={"security"="is_granted('ROLE_AUTHOR') or object.getUsername() == user.getUsername()"}
  *     },
  *     collectionOperations={
- *          "get",
+ *          "get"={"security"="is_granted('ROLE_AUTHOR')"},
  *          "post"
  *     }
  * )
@@ -50,13 +51,19 @@ class User implements UserInterface
      *
      * @ORM\Column(name="email", type="string", length=180, unique=true, nullable=false)
      * @Assert\NotBlank()
+     * @Assert\Email()
      */
     private $email;
 
     /**
      * @var array
+     *
+     * @Groups({"read"})
+     *
+     * @ORM\Column(type="json")
+     * @Assert\NotBlank()
      */
-    private $roles = [];
+    private $roles = ['ROLE_USER'];
 
     /**
      * @var string The hashed password
@@ -137,7 +144,7 @@ class User implements UserInterface
      *
      * @Groups ({"read", "write"})
      *
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="user")
+     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     private $comments;
 
@@ -146,12 +153,12 @@ class User implements UserInterface
      *
      * @Groups ({"read", "write"})
      *
-     * @ORM\OneToMany(targetEntity=Post::class, mappedBy="user")
+     * @ORM\OneToMany(targetEntity=Post::class, mappedBy="user", cascade={"persist"}, orphanRemoval=true)
      */
     private $posts;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Post::class, mappedBy="likes")
+     * @ORM\ManyToMany(targetEntity=Post::class, mappedBy="likes", cascade={"persist"}, orphanRemoval=true)
      */
     private $likedPosts;
 

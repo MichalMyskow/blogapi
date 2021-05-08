@@ -22,12 +22,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     denormalizationContext={"groups"={"write"}},
  *     itemOperations={
  *       "get",
- *       "put"={"security"="is_granted('ROLE_AUTHOR') or object.owner == user"},
- *       "delete"
+ *       "put"={"security"="is_granted('ROLE_AUTHOR') or object.getUser().getUsername() == user.getUsername()"},
+ *       "patch"={"security"="is_granted('ROLE_AUTHOR') or object.getUser().getUsername() == user.getUsername()"},
+ *       "delete"={"security"="is_granted('ROLE_AUTHOR') or object.getUser().getUsername() == user.getUsername()"}
  *     },
  *     collectionOperations={
  *          "get",
- *          "post"
+ *          "post"={"security"="is_granted('ROLE_AUTHOR')", "security_message"="Only authors can add posts."}
  *     }
  * )
  * @ApiFilter(BooleanFilter::class, properties={"published"})
@@ -136,6 +137,16 @@ class Post
      * @ORM\JoinTable(name="likes")
      */
     private $likes;
+
+    /**
+     * @var string
+     *
+     * @Groups({"read", "write"})
+     *
+     * @ORM\Column(name="photo_link",type="string", length=255, nullable=false)
+     * @Assert\NotBlank()
+     */
+    private $photoLink;
 
     public function __construct()
     {
@@ -322,6 +333,18 @@ class Post
     public function removeLike(User $like): self
     {
         $this->likes->removeElement($like);
+
+        return $this;
+    }
+
+    public function getPhotoLink(): string
+    {
+        return $this->photoLink;
+    }
+
+    public function setPhotoLink(string $photoLink): self
+    {
+        $this->photoLink = $photoLink;
 
         return $this;
     }
