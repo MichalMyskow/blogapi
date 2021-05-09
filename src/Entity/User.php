@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -11,14 +13,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * @ApiResource(
  *     normalizationContext={"groups"={"read"}},
  *     denormalizationContext={"groups"={"write"}},
  *     itemOperations={
- *       "get",
+ *       "get"={"security"="is_granted('ROLE_AUTHOR') or object.getUsername() == user.getUsername()"},
  *       "put"={"security"="is_granted('ROLE_AUTHOR') or object.getUsername() == user.getUsername()"},
  *       "patch"={"security"="is_granted('ROLE_AUTHOR') or object.getUsername() == user.getUsername()"},
  *       "delete"={"security"="is_granted('ROLE_AUTHOR') or object.getUsername() == user.getUsername()"}
@@ -28,6 +29,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
  *          "post"
  *     }
  * )
+ * @ApiFilter(SearchFilter::class, properties={"username": "exact"})
  * @ORM\Table (name="user")
  * @ORM\Entity()
  */
