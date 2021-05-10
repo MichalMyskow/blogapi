@@ -16,13 +16,13 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     normalizationContext={"groups"={"read"}},
  *     denormalizationContext={"groups"={"write"}},
  *     itemOperations={
- *       "get",
- *       "put",
- *       "delete"
+ *       "get"={"security"="is_granted('ROLE_AUTHOR')"},
+ *       "put"={"security"="is_granted('ROLE_AUTHOR')"},
+ *       "delete"={"security"="is_granted('ROLE_AUTHOR')"}
  *     },
  *     collectionOperations={
- *          "get",
- *          "post"
+ *          "get"={"security"="is_granted('ROLE_AUTHOR')"},
+ *          "post"={"security"="is_granted('ROLE_AUTHOR')"}
  *     }
  * )
  * @ORM\Table(name="comment")

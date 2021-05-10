@@ -126,6 +126,8 @@ class User implements UserInterface
     private $verified = false;
 
     /**
+     * @var DateTimeInterface
+     *
      * @Groups ({"read"})
      *
      * @ORM\Column(name="last_login", type="datetime", nullable=true)
